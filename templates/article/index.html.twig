@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Article index
+{% endblock %}
+
+{% block body %}
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<h1 class="h3 m-0">Articles</h1>
+		{% if app.user %}
+			<a class="btn btn-primary" href="{{ path('app_article_new') }}">Créer un article</a>
+		{% else %}
+			<a class="btn btn-outline-primary" href="{{ path('app_login') }}">Se connecter pour créer</a>
+		{% endif %}
+	</div>
+
+	<div class="table-responsive">
+		<table class="table table-striped table-hover table-bordered align-middle">
+			<thead class="table-light">
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Titre</th>
+					<th scope="col">Slug</th>
+					<th scope="col">Extrait</th>
+					<th scope="col">Image</th>
+					<th scope="col">Créé</th>
+					<th scope="col">Mis à jour</th>
+					<th scope="col">Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for article in articles %}
+					<tr>
+						<th scope="row">{{ article.id }}</th>
+						<td class="w-25">
+							<strong>{{ article.title }}</strong>
+						</td>
+						<td>
+							<code class="text-muted">{{ article.slug }}</code>
+						</td>
+						<td class="text-truncate" style="max-width: 28ch;">{{ article.content|striptags|length > 120 ? (article.content|striptags)|slice(0,120) ~ '…' : article.content|striptags }}</td>
+						<td>
+							{% if article.imagePath %}
+								<img src="{{ asset(article.imagePath) }}" alt="" class="img-thumbnail" style="width:88px;height:60px;object-fit:cover;">
+							{% else %}
+								<span class="text-muted small">—</span>
+							{% endif %}
+						</td>
+						<td>
+							<small class="text-muted">{{ article.createdAt ? article.createdAt|date('Y-m-d') : '' }}</small>
+						</td>
+						<td>
+							<small class="text-muted">{{ article.updatedAt ? article.updatedAt|date('Y-m-d') : '' }}</small>
+						</td>
+						<td class="text-nowrap">
+							<a href="{{ path('app_article_show', {'slug': article.slug}) }}" class="btn btn-sm btn-outline-primary me-1">Voir</a>
+							{% if app.user %}
+								<a href="{{ path('app_article_edit', {'slug': article.slug}) }}" class="btn btn-sm btn-primary me-1">Éditer</a>
+
+								<form method="post" action="{{ path('app_article_delete', {'slug': article.slug}) }}" style="display:inline" onsubmit="return confirm('Confirmer la suppression de cet article ?');">
+									<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+									<button class="btn btn-sm btn-outline-danger" type="submit">Supprimer</button>
+								</form>
+							{% else %}
+								<a href="{{ path('app_login') }}" class="btn btn-sm btn-outline-secondary">Se connecter</a>
+							{% endif %}
+						</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="8" class="text-center text-muted">Aucun article trouvé.</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+{% endblock %}

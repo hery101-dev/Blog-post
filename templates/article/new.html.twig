@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Article
+{% endblock %}
+
+{% block body %}
+	<div class="container py-5">
+		<div class="row justify-content-center">
+			<div class="col-12 col-md-10 col-lg-8">
+				<div class="card shadow-sm">
+					<div class="card-header bg-primary text-white">
+						<h2 class="h5 mb-0">Créer un nouvel article</h2>
+					</div>
+					<div class="card-body">
+						<p class="text-muted mb-4">Remplissez le formulaire ci-dessous pour publier un nouvel article.</p>
+
+						{{ include('article/_form.html.twig', {button_label: 'Publier'}) }}
+					</div>
+				</div>
+				<div class="text-center mt-3">
+					<a href="{{ path('app_article_index') }}" class="btn btn-link">Retour à la liste</a>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

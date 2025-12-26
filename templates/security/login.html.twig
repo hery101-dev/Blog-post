@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion
+{% endblock %}
+
+{% block body %}
+
+	<div class="container d-flex justify-content-center mt-5">
+
+		<div class="col-12 col-sm-8 col-md-6 col-lg-4 p-4 bg-secondary rounded text-white shadow">
+			<div class="card-body bg-secondary">
+				<a href="{{ path('app_home') }}" class="nav-link" style="font-size: large;"><img class="img-fluid rounded-3" style="width: 50px; height: 50px" src="{{ asset('images/blog_post.jpg') }}" alt="Logo de l'application">
+					Blog</a>
+			</div>
+			<br><br>
+			<form method="post">
+
+				<h1 class="h3 mb-3 text-center">Connectez-vous</h1>
+
+				{# Affichage des erreurs #}
+				{% if login_error_message %}
+					<div class="alert alert-danger">{{ login_error_message }}</div>
+				{% elseif error %}
+					<div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+				{% endif %}
+
+
+				{# {% if app.user %}
+													<div class="alert alert-info mb-3">
+														Vous êtes connecté en tant que **{{ app.user.userIdentifier }}**.
+														<a href="{{ path('app_logout') }}" class="alert-link">Se déconnecter</a>
+													</div>
+												{% endif %} #}
+
+				{# Champ Email #}
+				<div class="mb-3">
+					<label for="inputEmail" class="form-label">Adresse e-mail</label>
+					<input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
+					<div id="emailFeedback" class="invalid-feedback">Email non valide</div>
+				</div>
+
+				{# Champ Mot de passe #}
+				<div class="mb-3">
+					<label for="inputPassword" class="form-label">Mot de passe</label>
+					<input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+				</div>
+
+				{# Case à cocher (Remember Me) #}
+				<div class="mb-3 form-check">
+					<input type="checkbox" name="_remember_me" id="rememberMe" class="form-check-input">
+					<label class="form-check-label" for="rememberMe">
+						Se souvenir de moi
+					</label>
+				</div>
+
+				{# Token CSRF (Important pour la sécurité) #}
+				<input
+				type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+				{# Bouton de Connexion #}
+				<div class="d-grid gap-2">
+					<button class="btn btn-lg btn-primary mt-3" type="submit">
+						Se connecter
+					</button>
+				</div>
+
+				<script>
+					// Client-side validation to show a friendly message for invalid email before submitting
+(function () {
+const form = document.currentScript && document.currentScript.ownerDocument ? document.currentScript.ownerDocument.querySelector('form') : document.querySelector('form');
+const email = document.getElementById('inputEmail');
+if (! form || ! email) 
+return;
+
+
+
+form.addEventListener('submit', function (e) {
+if (! email.checkValidity()) {
+e.preventDefault();
+email.classList.add('is-invalid');
+const feedback = document.getElementById('emailFeedback');
+if (feedback) 
+feedback.style.display = 'block';
+
+
+
+}
+});
+
+email.addEventListener('input', function () {
+if (email.checkValidity()) {
+email.classList.remove('is-invalid');
+const feedback = document.getElementById('emailFeedback');
+if (feedback) 
+feedback.style.display = 'none';
+
+
+
+}
+});
+})();
+				</script>
+				<div class="d-flex justify-content-center">
+					<a href="{{path('app_register')}}" class="text-white">Vous n'avez pas de compte ?</a>
+				</div>
+			</form>
+
+		</div>
+	</div>
+{% endblock %}

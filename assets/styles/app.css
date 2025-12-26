@@ -1,3 +1,347 @@
+/* Utiliser les utilitaires Bootstrap pour les arrière-plans ; éviter d'imposer un fond bleu ciel global */
+
+/* Variables de thème : valeurs par défaut (clair) et surcharges pour le mode sombre */
+:root {
+  --bg: #ffffff;
+  --text: #212529;
+  --muted: #6c757d;
+  --navbar-bg: #f8f9fa;
+  --navbar-text: #000000;
+  --card-bg: #ffffff;
+  --link-color: var(--bs-primary);
+}
+
+[data-theme="dark"] {
+  --bg: #0b0b0c;
+  --text: #f5f5f5;
+  --muted: #bdbdbd;
+  --navbar-bg: #1f2933; /* gris foncé */
+  --navbar-text: #ffffff;
+  --card-bg: #111216;
+  --link-color: #9fc5ff;
+}
+
+/* Application des couleurs du thème */
 body {
-    background-color: skyblue;
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+./* La navbar respecte les variables de thème */
+.navbar {
+  background-color: var(--navbar-bg) !important;
+}
+.navbar .nav-link,
+.navbar .navbar-brand,
+.navbar .btn-link,
+.navbar .btn {
+  color: var(--navbar-text) !important;
+}
+
+/* Les cartes suivent le thème */
+.card {
+  background-color: var(--card-bg);
+  color: var(--text);
+}
+
+/* Ajustements du bouton "Retour en haut" et du basculeur de thème */
+#backToTop {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1100;
+}
+
+#themeToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#themeToggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+#themeToggle .icon-sun {
+  display: none;
+}
+
+[data-theme="light"] #themeToggle .icon-sun {
+  display: inline-block;
+}
+[data-theme="light"] #themeToggle .icon-moon {
+  display: none;
+}
+[data-theme="dark"] #themeToggle .icon-moon {
+  display: inline-block;
+}
+[data-theme="dark"] #themeToggle .icon-sun {
+  display: none;
+}
+
+/* Améliorer la visibilité du basculeur de thème dans les deux thèmes */
+[data-theme="light"] #themeToggle {
+  background-color: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+[data-theme="dark"] #themeToggle {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+#themeToggle {
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--navbar-text);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+#themeToggle svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Toggle animation + icon transitions */
+#themeToggle {
+  transition: transform 180ms ease, background-color 150ms ease,
+    border-color 150ms ease;
+}
+#themeToggle.animating {
+  transform: scale(1.05);
+}
+#themeToggle .icon-sun,
+#themeToggle .icon-moon {
+  transition: opacity 200ms ease, transform 200ms ease;
+  display: inline-block;
+  vertical-align: middle;
+}
+#themeToggle .icon-sun {
+  opacity: 0;
+  transform: rotate(-15deg) scale(0.95);
+}
+[data-theme="light"] #themeToggle .icon-sun {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+[data-theme="light"] #themeToggle .icon-moon {
+  opacity: 0;
+  transform: rotate(15deg) scale(0.95);
+}
+[data-theme="dark"] #themeToggle .icon-moon {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+/* Back-to-top: transitions and accessible visibility */
+#backToTop {
+  opacity: 0;
+  transform: translateY(8px);
+  visibility: hidden;
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+#backToTop.visible {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+#backToTop:focus {
+  outline: 3px solid rgba(0, 123, 255, 0.25);
+  outline-offset: 2px;
+}
+
+/* Focus styles for keyboard users */
+#themeToggle:focus {
+  outline: 3px solid rgba(0, 123, 255, 0.25);
+  outline-offset: 2px;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  #themeToggle,
+  #backToTop,
+  #themeToggle .icon-sun,
+  #themeToggle .icon-moon {
+    transition: none !important;
+  }
+}
+
+/* Assurer que les icônes utilisent la couleur courante et restent lisibles dans les deux thèmes */
+#themeToggle svg {
+  fill: currentColor;
+  stroke: currentColor;
+}
+#themeToggle .icon-moon path,
+#themeToggle .icon-sun path {
+  fill: currentColor;
+}
+
+/* Ajouter un léger contour/ombre pour améliorer le contraste, notamment pour la lune en mode sombre */
+[data-theme="dark"] #themeToggle .icon-moon path {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.08));
+}
+[data-theme="light"] .search-suggestions {
+  background-color: #ffffff;
+  color: #212529;
+}
+[data-theme="dark"] .search-suggestions {
+  background-color: var(--card-bg);
+  color: var(--text);
+}
+
+/* Suggestions de recherche (autocomplete) */
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+.search-suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.search-suggestion-item:hover,
+.search-suggestion-item.active {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+.search-suggestion-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.search-suggestion-sub {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+[data-theme="light"] #themeToggle .icon-moon path {
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.12));
+}
+
+/* S'assurer que les petits textes de la navbar respectent la couleur du thème */
+.navbar .small {
+  color: var(--navbar-text) !important;
+}
+
+/* Taille de l'image de la marque dans la navbar pour un rendu cohérent */
+.navbar-brand img {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+}
+
+/* Lorsque la navbar est fixée en haut, ajouter un padding au body pour que le contenu ne soit pas masqué */
+body {
+  padding-top: 70px; /* hauteur de la navbar + espacement */
+}
+
+@media (max-width: 576px) {
+  body {
+    padding-top: 70px;
+  }
+}
+
+/* Featured card tweaks */
+.card.featured {
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+.card.featured .bg-dark {
+  padding: 1.5rem 1.5rem;
+}
+
+/* 1. Base du lien (Conteneur de l'animation) */
+.nav-underline-effect {
+  /* Rend l'élément parent positionné pour que l'élément ::after puisse s'y accrocher */
+  position: relative;
+
+  /* Supprime le soulignement par défaut des liens */
+  text-decoration: none;
+
+  /* S'assurer qu'il est bleu si vous utilisez btn-link */
+  color: var(--bs-primary);
+
+  /* Ajouter une transition de couleur douce pour le texte au survol */
+  transition: color 0.3s ease-in-out;
+}
+
+/* 2. Création de la ligne (le pseudo-élément) */
+.nav-underline-effect::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%; /* La ligne prend toute la largeur */
+  height: 2px; /* Épaisseur de la ligne */
+  background-color: var(
+    --bs-white
+  ); /* Couleur de la ligne (votre bleu primaire Bootstrap) */
+
+  /* 🚨 L'état initial : Masquer la ligne en réduisant sa largeur à zéro depuis la droite */
+  transform-origin: right; /* Le point d'ancrage de la transformation est à droite */
+  transform: scaleX(0); /* La ligne est masquée */
+
+  /* Transition pour l'animation */
+  transition: transform 0.3s ease-in-out;
+}
+
+/* 3. L'Effet de Survol (Animation) */
+.nav-underline-effect:hover::after {
+  /* Au survol, la ligne s'étend à 100% de sa largeur */
+  transform: scaleX(1);
+
+  /* Le 'transform-origin: right;' fait que l'animation part de la droite vers la gauche */
+}
+
+/* 4. Effet de survol sur le texte (Optionnel) */
+.nav-underline-effect:hover {
+  /* Rendre le texte un peu plus sombre/clair au survol */
+  color: #f5f5f5;
+}
+
+/* Effet de révélation (apparition au défilement) */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  visibility: hidden;
+  transition: opacity 0.6s cubic-bezier(0.22, 0.9, 0.34, 1),
+    transform 0.6s cubic-bezier(0.22, 0.9, 0.34, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
+}
+.reveal[data-origin="left"] {
+  transform: translateX(-20px);
+}
+.reveal[data-origin="right"] {
+  transform: translateX(20px);
+}
+.reveal[data-origin="top"] {
+  transform: translateY(-12px);
+}
+.reveal[data-origin="bottom"] {
+  transform: translateY(20px);
+}
+
+/* Support de décalage via style inline ou attribut data-delay (ms) */
+.reveal[data-delay] {
+  transition-delay: calc(var(--reveal-delay, 0ms));
+}
+
+/* Désactiver les animations pour les utilisateurs ayant demandé une réduction des mouvements */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    transition: none;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+  }
 }

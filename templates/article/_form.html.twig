@@ -1,0 +1,125 @@
+{{ form_start(form, {attr: {novalidate: 'novalidate'}}) }}
+<div class="mb-3">{{ form_errors(form) }}</div>
+
+<div class="mb-3">
+	{{ form_row(form.title, {'attr': {'class': 'form-control'}}) }}
+</div>
+
+<div
+	class="mb-3">{# le slug est généré automatiquement à l'enregistrement ; non modifiable par l'utilisateur #}
+</div>
+
+<div class="mb-3">
+	{{ form_row(form.content, {'attr': {'class': 'form-control', 'rows': 6}}) }}
+</div>
+
+<div class="mb-3">
+	{{ form_row(form.imageFile, {'attr': {'class': 'form-control', 'accept': 'image/*'}}) }}
+
+	{# Zone d'aperçu (affiche l'image existante ou le fichier sélectionné) #}
+	<div class="mt-2">
+		<img id="imagePreviewImg" src="{% if form.vars.value.imagePath is defined and form.vars.value.imagePath %}{{ asset(form.vars.value.imagePath) }}{% endif %}" alt="Aperçu" class="img-thumbnail" style="max-width:200px; {% if not (form.vars.value.imagePath is defined and form.vars.value.imagePath) %}display:none;{% endif %}">
+		<div id="imageError" class="invalid-feedback" style="display:none;"></div>
+	</div>
+</div>
+
+{# Aperçu côté client et validation pour les uploads d'images #}
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+const MAX_SIZE = 5 * 1024 * 1024; // 5 Mo
+const fileInput = document.querySelector('input[type="file"][name$="[imageFile]"]');
+if (! fileInput) 
+return;
+
+
+
+const form = fileInput.closest('form');
+const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+const errorEl = document.getElementById('imageError');
+const previewImg = document.getElementById('imagePreviewImg');
+
+fileInput.addEventListener('change', function () {
+const file = this.files && this.files[0];
+if (! file) { // Aucun fichier sélectionné — masquer l'aperçu et l'erreur
+if (previewImg) {
+previewImg.style.display = 'none';
+previewImg.src = '';
+}
+if (errorEl) {
+errorEl.style.display = 'none';
+errorEl.textContent = '';
+}
+if (submitBtn) 
+submitBtn.disabled = false;
+
+
+
+this.classList.remove('is-invalid');
+return;
+}
+
+// Valider le type
+if (! file.type.startsWith('image/')) {
+if (errorEl) {
+errorEl.textContent = 'Le fichier doit être une image.';
+errorEl.style.display = 'block';
+}
+this.classList.add('is-invalid');
+if (submitBtn) 
+submitBtn.disabled = true;
+
+
+
+if (previewImg) {
+previewImg.style.display = 'none';
+}
+return;
+}
+
+// Valider la taille
+if (file.size > MAX_SIZE) {
+if (errorEl) {
+errorEl.textContent = 'Le fichier est trop volumineux (max 5 Mo).';
+errorEl.style.display = 'block';
+}
+this.classList.add('is-invalid');
+if (submitBtn) 
+submitBtn.disabled = true;
+
+
+
+if (previewImg) {
+previewImg.style.display = 'none';
+}
+return;
+}
+
+// Fichier valide
+this.classList.remove('is-invalid');
+if (errorEl) {
+errorEl.style.display = 'none';
+errorEl.textContent = '';
+}
+if (submitBtn) 
+submitBtn.disabled = false;
+
+
+
+const reader = new FileReader();
+reader.onload = function (e) {
+if (previewImg) {
+previewImg.src = e.target.result;
+previewImg.style.display = 'inline-block';
+}
+};
+reader.readAsDataURL(file);
+});
+});
+</script>
+
+<div class="d-flex gap-2">
+	<button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+	<a href="{{ path('app_article_index') }}" class="btn btn-outline-secondary">Annuler</a>
+</div>
+
+{{ form_end(form) }}

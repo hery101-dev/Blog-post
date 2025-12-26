@@ -1,17 +1,334 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}Welcome!
+			{% endblock %}
+		</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous"> {% block stylesheets %}{% endblock %}{% block javascripts %}{% endblock %}
+		<link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+	</head>
+	<body>
+		{% block body %}{% endblock %}
+		<!-- Barre de navigation globale (fixée en haut) -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-secondary fixed-top shadow-sm">
+			<div class="container">
+				<a class="navbar-brand d-flex align-items-center" href="{{ path('app_home') }}">
+					<img src="{{ asset('images/blog_post.jpg') }}" alt="logo" class="rounded me-2" style="width:36px;height:36px;object-fit:cover;">
+					<span class="fw-bold">Blog</span>
+				</a>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#globalNav" aria-controls="globalNav" aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<!-- Région muette pour annoncer le changement de thème aux lecteurs d'écran -->
+				<span id="themeStatus" role="status" aria-live="polite" class="visually-hidden"></span>
+				<div class="collapse navbar-collapse" id="globalNav">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('app_home') }}">Accueil</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="{{ path('app_article_index') }}">Articles</a>
+						</li>
+					</ul>
+					<form class="d-flex me-3 position-relative" role="search" action="{{ path('app_article_list') }}" method="get" autocomplete="off">
+						<label for="navSearch" class="visually-hidden">Rechercher</label>
+						<input id="navSearch" class="form-control form-control-sm me-2" type="search" placeholder="Rechercher des articles" aria-label="Rechercher des articles" name="q" value="{{ app.request.get('q') }}" aria-autocomplete="list" aria-expanded="false" aria-owns="navSearchList">
+						<button class="btn btn-outline-light btn-sm" type="submit" aria-label="Lancer la recherche">
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewbox="0 0 16 16" aria-hidden="true"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.243 0a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/></svg>
+						</button>
+						<div id="navSearchList" class="search-suggestions visually-hidden" role="listbox" aria-label="Suggestions de recherche"></div>
+					</form>
+					<div
+						class="d-flex align-items-center">
+						<!-- Basculeur de thème -->
+						<button id="themeToggle" class="btn btn-sm btn-link me-2" aria-label="Basculer le thème" title="Basculer le thème" type="button">
+							<span class="visually-hidden">Basculer le thème</span>
+							<!-- Icône lune (mode sombre) -->
+							<svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M6 0a.5.5 0 0 0 0 1 6 6 0 1 1 0 12 .5.5 0 0 0 0 1 7 7 0 1 0 0-14z"/></svg>
+							<!-- Icône soleil (mode clair) -->
+							<svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 4.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7zM8 0a.5.5 0 0 1 .5.5V2A.5.5 0 0 1 8 2v-.5A.5.5 0 0 1 8 0zM8 14a.5.5 0 0 1 .5.5V16A.5.5 0 0 1 8 16v-.5A.5.5 0 0 1 8 14zM2.343 2.343a.5.5 0 0 1 .707 0L4 3.293a.5.5 0 0 1-.707.707L2.343 3.05a.5.5 0 0 1 0-.707zM11.293 11.293a.5.5 0 0 1 .707 0L13 12.243a.5.5 0 0 1-.707.707l-1.414-1.414a.5.5 0 0 1 0-.707zM0 8a.5.5 0 0 1 .5-.5H2A.5.5 0 0 1 2 8H.5A.5.5 0 0 1 0 8zM14 8a.5.5 0 0 1 .5-.5H16A.5.5 0 0 1 16 8h-1.5A.5.5 0 0 1 14 8zM2.343 13.657a.5.5 0 1 1-.707.707L1.293 14.5a.5.5 0 1 1 .707-.707l.343.364zM13.657 2.343a.5.5 0 0 1 .707.707L14.707 4a.5.5 0 1 1-.707-.707l-.343-.364z"/></svg>
+						</button>
+						{% if app.user %}
+							<span class="me-3 small">Connecté :
+								<strong>{{ app.user.userIdentifier }}</strong>
+							</span>
+							<a class="btn btn-outline-light btn-sm me-2" href="{{ path('app_logout') }}">Se déconnecter</a>
+						{% else %}
+							<a class="btn btn-link me-2" href="{{ path('app_login') }}">Se connecter</a>
+							<a class="btn btn-primary btn-sm" href="{{ path('app_register') }}">Inscription</a>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</nav>
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+		<!-- Basculeur de thème : persiste la préférence et initialise l'état -->
+		<script>
+			(function () {
+const STORAGE_KEY = 'theme';
+const root = document.documentElement;
+const btn = document.getElementById('themeToggle');
+if (! btn) 
+return;
+
+
+
+function applyTheme(theme) {
+if (theme === 'dark') {
+root.setAttribute('data-theme', 'dark');
+btn.setAttribute('aria-pressed', 'true');
+} else {
+root.setAttribute('data-theme', 'light');
+btn.setAttribute('aria-pressed', 'false');
+}
+localStorage.setItem(STORAGE_KEY, theme);
+// Mettre à jour la région d'annonce pour les lecteurs d'écran
+const statusEl = document.getElementById('themeStatus');
+if (statusEl) {
+statusEl.textContent = theme === 'dark' ? 'Mode sombre activé' : 'Mode clair activé';
+}
+}
+// Initialiser depuis localStorage ou prefers-color-scheme
+const saved = localStorage.getItem(STORAGE_KEY);
+if (saved) {
+applyTheme(saved);
+} else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+applyTheme('dark');
+} else {
+applyTheme('light');
+} btn.addEventListener('click', function () {
+const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+applyTheme(current === 'dark' ? 'light' : 'dark');
+});
+})();
+		</script>
+
+		<!-- Autocomplete (recherche instantanée) -->
+		<script>
+			(function () {
+const input = document.getElementById('navSearch');
+const list = document.getElementById('navSearchList');
+if (! input || ! list) 
+return;
+
+
+
+const endpoint = '{{ path('app_search_ajax') }}';
+let deb = null;
+let items = [];
+let selected = -1;
+
+function clearList() {
+list.innerHTML = '';
+list.classList.add('visually-hidden');
+input.setAttribute('aria-expanded', 'false');
+selected = -1;
+items = [];
+}
+
+function render(results) {
+list.innerHTML = '';
+if (! results || results.length === 0) {
+clearList();
+return;
+}
+results.forEach((r, i) => {
+const el = document.createElement('div');
+el.className = 'search-suggestion-item';
+el.setAttribute('role', 'option');
+el.id = `nav-suggestion-${i}`;
+el.dataset.slug = r.slug;
+el.innerHTML = `<div class="search-suggestion-title">${
+escapeHtml(r.title)
+}</div>`;
+el.addEventListener('mousedown', function (ev) { // mousedown to avoid blur
+ev.preventDefault();
+window.location.href = '/article/' + r.slug;
+});
+list.appendChild(el);
+});
+items = Array.from(list.querySelectorAll('.search-suggestion-item'));
+list.classList.remove('visually-hidden');
+input.setAttribute('aria-expanded', 'true');
+}
+
+function escapeHtml(str) {
+return String(str).replace(/[&<>"']/g, function (s) {
+return({
+'&': '&amp;',
+'<': '&lt;',
+'>': '&gt;',
+'"': '&quot;',
+"'": "&#39;"
+})[s];
+});
+}
+
+function fetchSuggestions(q) {
+if (! q || q.trim() === '') {
+clearList();
+return;
+}
+fetch(endpoint + '?q=' + encodeURIComponent(q) + '&limit=7').then(r => r.json()).then(json => render(json)).catch(() => clearList());
+}
+
+input.addEventListener('input', function () {
+if (deb) 
+clearTimeout(deb);
+
+
+deb = setTimeout(() => fetchSuggestions(this.value), 220);
+});
+
+input.addEventListener('keydown', function (e) {
+if (list.classList.contains('visually-hidden')) 
+return;
+
+
+if (e.key === 'ArrowDown') {
+e.preventDefault();
+if (selected < items.length - 1) 
+selected++;
+ else 
+selected = 0;
+ updateActive();
+} else if (e.key === 'ArrowUp') {
+e.preventDefault();
+if (selected > 0) 
+selected--;
+ else 
+selected = items.length - 1;
+ updateActive();
+} else if (e.key === 'Enter') {
+if (selected >= 0 && items[selected]) {
+e.preventDefault();
+const slug = items[selected].dataset.slug;
+window.location.href = '/article/' + slug;
+}
+} else if (e.key === 'Escape') {
+clearList();
+}
+});
+
+function updateActive() {
+items.forEach((it, idx) => {
+if (idx === selected) {
+it.classList.add('active');
+it.setAttribute('aria-selected', 'true');
+it.scrollIntoView({block: 'nearest'});
+} else {
+it.classList.remove('active');
+it.removeAttribute('aria-selected');
+}
+});
+}
+
+// Hide on blur (allow click by delaying)
+input.addEventListener('blur', function () {
+setTimeout(clearList, 150);
+});
+// Hide if clicking outside
+document.addEventListener('click', function (e) {
+if (! e.target.closest('#navSearchList') && ! e.target.closest('#navSearch')) {
+clearList();
+}
+});
+
+})();
+		</script>
+
+		<!-- Effet de révélation : applique la classe .reveal aux blocs courants et les affiche lorsqu'ils entrent dans le viewport -->
+		<script>
+			(function () { // Respecter la préférence de réduction des mouvements
+if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { // Rendre les éléments visibles immédiatement
+document.querySelectorAll('.reveal, section, article, .card, .container > .row').forEach(el => el.classList.add('visible'));
+return;
+}
+
+const selector = 'section, article, .card, .container > .row, header, main, aside';
+const nodes = Array.from(document.querySelectorAll(selector));
+// Ajouter la classe .reveal aux éléments qui ne sont pas déjà marqués
+nodes.forEach(el => {
+if (!el.classList.contains('reveal') && !el.classList.contains('no-reveal')) 
+el.classList.add('reveal');
+
+
+
+});
+
+const io = new IntersectionObserver((entries, obs) => {
+entries.forEach(entry => {
+if (entry.isIntersecting) {
+const el = entry.target;
+// appliquer un délai optionnel depuis l'attribut data-delay (ms)
+const delay = el.getAttribute('data-delay');
+if (delay) {
+el.style.setProperty('--reveal-delay', delay + 'ms');
+// forcer le reflow pour s'assurer que la transition prend en compte le délai
+void el.offsetWidth;
+}
+el.classList.add('visible');
+obs.unobserve(el);
+}
+});
+}, {
+threshold: 0.12,
+rootMargin: '0px 0px -10% 0px'
+});
+
+nodes.forEach(el => io.observe(el));
+})();
+		</script>
+
+		<!-- Pied de page global -->
+		<footer class="py-4 bg-secondary text-white mt-5">
+			<div class="container d-flex justify-content-between align-items-center">
+				<small>&copy;
+					{{ "now"|date("Y") }}
+					Blog</small>
+				<button id="backToTop" class="btn btn-primary btn-sm d-flex align-items-center back-to-top" aria-label="Retour en haut" aria-hidden="true" tabindex="-1">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewbox="0 0 16 16" aria-hidden="true">
+						<path fill-rule="evenodd" d="M8 12a.5.5 0 0 0 .5-.5V3.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4-.007-.007a.498.498 0 0 0-.697.007l-4 4a.5.5 0 0 0 .708.708L7.5 3.707V11.5A.5.5 0 0 0 8 12z"/>
+					</svg>
+					<span class="ms-2"><img class="img-fluid" src="{{ asset('iamges/fleche-vers-le-haut-sur-un-fond-de-cercle-noir') }}" alt=""></span>
+				</button>
+			</div>
+		</footer>
+
+		<!-- Comportement du bouton 'Retour en haut' -->
+		<script>
+			(function () {
+const btn = document.getElementById('backToTop');
+if (! btn) 
+return;
+
+
+
+const showAt = 200;
+function updateBackToTopVisibility() {
+if (window.scrollY > showAt) {
+btn.classList.add('visible');
+btn.setAttribute('aria-hidden', 'false');
+btn.removeAttribute('tabindex');
+} else {
+btn.classList.remove('visible');
+btn.setAttribute('aria-hidden', 'true');
+btn.setAttribute('tabindex', '-1');
+}
+}
+window.addEventListener('scroll', updateBackToTopVisibility);
+// Vérifier l'état initial au chargement de la page
+updateBackToTopVisibility();
+btn.addEventListener('click', function (e) {
+e.preventDefault();
+// Faire défiler en douceur vers le sommet de la page
+window.scrollTo({top: 0, behavior: 'smooth'});
+});
+})();
+		</script>
+	</body>
 </html>

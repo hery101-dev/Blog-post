@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Blog
+{% endblock %}
+
+{% block body %}
+
+
+	{# Afficher les articles depuis la base de données en utilisant le style "featured" #}
+	{% for article in articles %}
+		<section class="py-5">
+			<div class="container">
+				<div class="card featured text-white rounded-3 overflow-hidden shadow-sm mb-4">
+					<div class="row g-0 align-items-stretch">
+						<div class="col-md-8 bg-dark p-4">
+							<p class="text-primary small fw-bold mb-2">Blog</p>
+							<h3 class="fw-bold">{{ article.title }}</h3>
+							<p class="text-muted small mb-3">{{ article.createdAt ? article.createdAt|date('M d') : '' }}</p>
+							<p class="mb-4">{{ article.content|striptags|length > 180 ? (article.content|striptags)|slice(0,180) ~ '…' : article.content|striptags }}</p>
+							<a href="{{ path('app_article_show', {'slug': article.slug}) }}" class="text-decoration-none text-primary">Voir plus &rarr;</a>
+						</div>
+						<div class="col-md-4 d-none d-md-block">
+							{% if article.imagePath %}
+								<div class="img-fluid" style="background-image: url('{{ asset(article.imagePath) }}'); background-size: cover; background-position: center; min-height:260px; max-width: 100%;"></div>
+							{% else %}
+								<div class="d-flex bg-secondary align-items-center justify-content-center" style="min-height:160px;">
+									<div class="text-white small">Vignette</div>
+								</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	{% else %}
+		<section class="py-5">
+			<div class="container">
+				<p class="text-muted">Aucun article trouvé.</p>
+			</div>
+		</section>
+	{% endfor %}
+
+	{# <!-- Derniers articles (espace réservé) -->
+					<section class="py-5">
+						<div class="container text-center">
+							<p class="mb-3 h5">Vous voyez les 3 derniers articles publiés.</p>
+							<a href="{{ path('app_list_article') }}" class="btn btn-outline-primary">Voir tous les articles</a>
+						</div>
+					</section> #}
+
+{% endblock %}
