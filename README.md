@@ -43,7 +43,7 @@ Si vous publiez ce dépôt sur GitHub et que vous voulez le cloner sur une autre
 1. Cloner le dépôt et se placer dans le dossier :
 
 ```bash
-git clone https://github.com/VOTRE-UTILISATEUR/VOTRE-REPO.git
+git clone https://github.com/hery101-dev/Blog-post.git
 cd VOTRE-REPO
 ```
 
